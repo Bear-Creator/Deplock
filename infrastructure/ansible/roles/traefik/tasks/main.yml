@@ -1,0 +1,26 @@
+---
+- name: Создание Docker сети для Traefik (ADR-002)
+  docker_network:
+    name: "{{ traefik_network }}"
+    state: present
+
+- name: Деплой контейнера Traefik как reverse proxy
+  docker_container:
+    name: traefik
+    image: traefik:v3.0
+    restart_policy: unless-stopped
+    ports:
+      - "80:80"        # HTTP: маршрутизирует трафик по доменам
+      - "443:443"      # HTTPS: сертификаты (LE)
+      - "8080:8080"    # Traefik Dashboard (уязвимый порт для продакшена без auth, но пойдет для теста)
+    volumes:
+      # Подключение к сокету для авто-discovery (сущности labels)
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - name: "{{ traefik_network }}"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"

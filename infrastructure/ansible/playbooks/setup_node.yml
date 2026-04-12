@@ -1,0 +1,10 @@
+---
+- name: Провижининг целевого сервера (Docker + Traefik)
+  hosts: all
+  become: yes
+  vars:
+    # ADR-002: Основная сеть для проксирования контейнеров Traefik
+    traefik_network: "traefik-net"
+  roles:
+    - docker
+    - traefik
