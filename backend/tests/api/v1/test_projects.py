@@ -1,8 +1,7 @@
 import uuid
 
-import app.api.dependencies.docker
 import pytest
-from app.main import app
+from app.main import app as fastapi_app
 from httpx import ASGITransport, AsyncClient
 
 
@@ -42,7 +41,7 @@ async def test_create_project_success():
         "ssh_user": "root",
     }
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as ac:
         res_server = await ac.post("/api/v1/servers/", json=server_payload)
         server_id = res_server.json()["id"]
@@ -67,7 +66,7 @@ async def test_create_project_success():
 async def test_create_project_docker_error():
     server_payload = {"name": "target-server-2", "ip_address": "11.11.11.11"}
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as ac:
         res_server = await ac.post("/api/v1/servers/", json=server_payload)
         server_id = res_server.json()["id"]
@@ -95,7 +94,7 @@ async def test_create_project_no_server():
         "server_id": str(uuid.uuid4()),
     }
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as ac:
         response = await ac.post("/api/v1/projects/", json=payload)
 
