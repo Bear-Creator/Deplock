@@ -6,6 +6,7 @@
 * **ADR-003**: Связь FastAPI с удаленными Docker daemon через SSH-контекст (`docker-py`).
 * **ADR-004**: Terraform используется для тестового стенда. Быстрый провижининг инфраструктуры через DigitalOcean API.
 * **ADR-005**: Развёртывание целевых хостов (роли: `docker`, `traefik`) полностью автоматизировано через Ansible плейбуки с идемпотентностью.
+* **ADR-006**: Для Frontend выбран стек: Vue 3 + Vite + Tailwind CSS + Vue Router + Axios.
 
 ## 2. Current State
 ### Stage 1: Core Architecture (Completed)
@@ -29,6 +30,12 @@
 * [x] Удаление проектов и остановка/удаление Docker контейнеров (DELETE API).
 * [x] Интеграция с логами Docker.
 * [x] Поддержка GitHub Webhooks (CD).
+
+### Stage 4: Web UI (Frontend)
+* [x] Инициализация Vue 3 + Vite + Tailwind CSS.
+* [ ] Реализация страниц управления серверами.
+* [ ] Реализация страниц управления деплоями.
+* [ ] Подключение API к бэкенду.
 
 ## 3. Known Bugs / Issues
 * (Пусто)
