@@ -58,3 +58,7 @@ class RemoteDockerClient:
             return f"Container {container_id} not found."
         except Exception as e:
             return f"Failed to get logs for container {container_id}: {e!s}"
+
+    def pull_image(self, image: str) -> None:
+        """Скачивает последнюю (или указанную) версию образа."""
+        self.client.images.pull(image)

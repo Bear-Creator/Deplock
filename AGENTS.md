@@ -28,7 +28,7 @@
 * [x] Список проектов и получение деталей через GET API.
 * [x] Удаление проектов и остановка/удаление Docker контейнеров (DELETE API).
 * [x] Интеграция с логами Docker.
-* [ ] Поддержка GitHub Webhooks (CD).
+* [x] Поддержка GitHub Webhooks (CD).
 
 ## 3. Known Bugs / Issues
 * (Пусто)

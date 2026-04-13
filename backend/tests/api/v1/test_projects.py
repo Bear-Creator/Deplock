@@ -28,6 +28,13 @@ class MockRemoteDockerClient:
             return "Failed to get logs for container error: test"
         return "Fake docker logs output"
 
+    def pull_image(self, image: str):
+        if "error" in image:
+            import docker
+
+            raise docker.errors.APIError("Mocked Docker Error on pull")
+        return True
+
 
 def override_get_docker_client(server):
     return MockRemoteDockerClient()
