@@ -1,10 +1,9 @@
+from app.db.models import Server
 from app.services.docker_client import RemoteDockerClient
 
 
-def get_docker_client() -> RemoteDockerClient:
+def get_docker_client(server: Server) -> RemoteDockerClient:
     """
-    Фабрика для инъекции зависимости RemoteDockerClient.
-    Пока захардкожено, позже параметры хоста будут браться из базы данных (сущность Server).
+    Фабрика создания клиента Docker для указанного сервера.
     """
-    # TODO: Получать credentials из контекста запроса (ID сервера)
-    return RemoteDockerClient(host="localhost", user="root")
+    return RemoteDockerClient(host=server.ip_address, user=server.ssh_user)

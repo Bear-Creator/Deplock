@@ -18,10 +18,10 @@
 * [x] Написание Ansible плейбуков (Docker + Traefik).
 
 ### Stage 2: State Management & Database
-* [ ] Выбор и инициализация ORM (SQLAlchemy) + миграции (Alembic).
-* [ ] Проектирование и создание БД моделей `Server` и `Project`.
-* [ ] CRUD API для управления серверами.
-* [ ] Интеграция данных серверов в `RemoteDockerClient` (уход от хардкода).
+* [x] Выбор и инициализация ORM (SQLAlchemy) + миграции (Alembic).
+* [x] Проектирование и создание БД моделей `Server` и `Project`.
+* [x] CRUD API для управления серверами.
+* [x] Интеграция данных серверов в `RemoteDockerClient` (уход от хардкода).
 
 ## 3. Known Bugs / Issues
 * (Пусто)

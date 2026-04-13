@@ -1,5 +1,7 @@
+import uuid
+
+import app.api.dependencies.docker
 import pytest
-from app.api.dependencies.docker import get_docker_client
 from app.main import app
 from httpx import ASGITransport, AsyncClient
 
@@ -15,43 +17,86 @@ class MockRemoteDockerClient:
         return {"container_id": "success-fake-id", "status": "created"}
 
 
-def override_get_docker_client():
+def override_get_docker_client(server):
     return MockRemoteDockerClient()
 
 
-app.dependency_overrides[get_docker_client] = override_get_docker_client
+# Убираем dependency_overrides так как get_docker_client больше не Depends(), а обычный вызов функции внутри create_project
+
+
+@pytest.fixture(autouse=True)
+def mock_docker_factory(monkeypatch):
+    """Подменяем вызов фабрики клиента в роутерах"""
+    monkeypatch.setattr(
+        "app.api.v1.projects.get_docker_client", override_get_docker_client
+    )
 
 
 @pytest.mark.asyncio
 async def test_create_project_success():
-    payload = {
-        "name": "my-cool-project",
-        "image": "nginx:alpine",
-        "domain": "myproject.dev.local",
+    """Тест успешного создания проекта и БД записи"""
+    # Создаем сервер перед деплоем
+    server_payload = {
+        "name": "target-server",
+        "ip_address": "12.34.56.78",
+        "ssh_user": "root",
     }
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
+        res_server = await ac.post("/api/v1/servers/", json=server_payload)
+        server_id = res_server.json()["id"]
+
+        payload = {
+            "name": "my-cool-project",
+            "image": "nginx:alpine",
+            "domain": "myproject.dev.local",
+            "server_id": server_id,
+        }
         response = await ac.post("/api/v1/projects/", json=payload)
 
     assert response.status_code == 201
     data = response.json()
-    assert data["message"] == "Project deployed successfully"
-    assert data["data"]["container_id"] == "success-fake-id"
+    assert data["name"] == "my-cool-project"
+    assert data["container_id"] == "success-fake-id"
+    assert data["status"] == "created"
+    assert data["server_id"] == server_id
 
 
 @pytest.mark.asyncio
 async def test_create_project_docker_error():
-    payload = {
-        "name": "error-project",
-        "image": "nginx:alpine",
-        "domain": "error.dev.local",
-    }
+    server_payload = {"name": "target-server-2", "ip_address": "11.11.11.11"}
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
+        res_server = await ac.post("/api/v1/servers/", json=server_payload)
+        server_id = res_server.json()["id"]
+
+        payload = {
+            "name": "error-project",
+            "image": "nginx:alpine",
+            "domain": "error.dev.local",
+            "server_id": server_id,
+        }
         response = await ac.post("/api/v1/projects/", json=payload)
 
     # Ожидаем 500 из-за обработки в except блоке
     assert response.status_code == 500
     assert "Docker API error: Mocked Docker Error" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_create_project_no_server():
+    """Тест 404 ошибки если сервер не найден"""
+    payload = {
+        "name": "no-server-project",
+        "image": "nginx:alpine",
+        "domain": "no.dev.local",
+        "server_id": str(uuid.uuid4()),
+    }
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.post("/api/v1/projects/", json=payload)
+
+    assert response.status_code == 404
