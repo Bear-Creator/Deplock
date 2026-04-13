@@ -1,10 +1,25 @@
+from contextlib import asynccontextmanager
+
 from app.api.v1.projects import router as projects_router
+from app.api.v1.servers import router as servers_router
+from app.db.database import Base, engine
 from fastapi import FastAPI
 
-app = FastAPI(title="Deplock Control Plane API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # При старте приложения (для dev) создаем таблицы БД
+    async with engine.begin() as conn:
+        # В проде тут должны быть alembic migrations
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
+
+app = FastAPI(title="Deplock Control Plane API", lifespan=lifespan)
 
 # Регистрация v1 API роутеров
 app.include_router(projects_router, prefix="/api/v1")
+app.include_router(servers_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["system"])

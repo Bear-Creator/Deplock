@@ -9,6 +9,9 @@ dependencies = [
     "uvicorn>=0.28.0",
     "docker>=7.0.0",
     "pydantic-settings>=2.2.0",
+    "sqlalchemy>=2.0.0",
+    "aiosqlite>=0.20.0",
+    "alembic>=1.13.1",
 ]
 
 [dependency-groups]
@@ -70,7 +73,7 @@ ignore = [
     "RUF001",
     "RUF002",
     "RUF003",
-    "B008"
+    "B008" #?
 ]
 
 fixable = ["ALL"]
@@ -93,3 +96,4 @@ line-ending = "auto"
 pythonpath = ["backend"]
 testpaths = ["backend/tests"]
 asyncio_default_fixture_loop_scope = "function"
+asyncio_mode = "auto"

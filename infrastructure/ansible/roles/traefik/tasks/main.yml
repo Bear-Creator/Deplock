@@ -12,9 +12,9 @@
     ports:
       - "80:80"        # HTTP: маршрутизирует трафик по доменам
       - "443:443"      # HTTPS: сертификаты (LE)
-      - "8080:8080"    # Traefik Dashboard (уязвимый порт для продакшена без auth, но пойдет для теста)
+      - "8080:8080"    # Traefik Dashboard
     volumes:
-      # Подключение к сокету для авто-discovery (сущности labels)
+      # Подключение к сокету для авто-discovery
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - name: "{{ traefik_network }}"

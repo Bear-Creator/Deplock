@@ -8,6 +8,7 @@
 * **ADR-005**: Развёртывание целевых хостов (роли: `docker`, `traefik`) полностью автоматизировано через Ansible плейбуки с идемпотентностью.
 
 ## 2. Current State
+### Stage 1: Core Architecture (Completed)
 * [x] Определение высокоуровневой архитектуры.
 * [x] Определение структуры проекта.
 * [x] Инициализация базового скелета FastAPI.
@@ -15,6 +16,12 @@
 * [x] Интеграция Docker SDK for Python (SSH transport).
 * [x] Написание Terraform манифестов для тестового стенда.
 * [x] Написание Ansible плейбуков (Docker + Traefik).
+
+### Stage 2: State Management & Database
+* [ ] Выбор и инициализация ORM (SQLAlchemy) + миграции (Alembic).
+* [ ] Проектирование и создание БД моделей `Server` и `Project`.
+* [ ] CRUD API для управления серверами.
+* [ ] Интеграция данных серверов в `RemoteDockerClient` (уход от хардкода).
 
 ## 3. Known Bugs / Issues
 * (Пусто)

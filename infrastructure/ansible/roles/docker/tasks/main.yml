@@ -1,5 +1,5 @@
 ---
-# Установка Docker CE через официальный репозиторий
+# Установка Docker CE
 - name: Обновление кэша apt и установка базовых пакетов
   apt:
     name:
@@ -32,7 +32,7 @@
 - name: Установка docker SDK for python (необходим для ansible docker modules)
   pip:
     name: docker
-    executable: pip3 # подразумевается ubuntu 24.04 с python3
+    executable: pip3
 
 - name: Запуск и включение сервиса Docker
   systemd:
