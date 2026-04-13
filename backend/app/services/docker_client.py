@@ -47,3 +47,14 @@ class RemoteDockerClient:
         except docker.errors.NotFound:
             # Если контейнер уже удален или не найден - считаем операцию успешной
             return True
+
+    def get_container_logs(self, container_id: str, tail: int = 100) -> str:
+        """Получает логи указанного контейнера."""
+        try:
+            container = self.client.containers.get(container_id)
+            # Возвращаем декодированные логи (строка)
+            return container.logs(tail=tail, stdout=True, stderr=True).decode("utf-8")
+        except docker.errors.NotFound:
+            return f"Container {container_id} not found."
+        except Exception as e:
+            return f"Failed to get logs for container {container_id}: {e!s}"

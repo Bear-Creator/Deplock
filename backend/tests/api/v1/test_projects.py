@@ -23,12 +23,14 @@ class MockRemoteDockerClient:
             raise docker.errors.APIError("Mocked Docker Error on remove")
         return True
 
+    def get_container_logs(self, container_id: str, tail: int = 100) -> str:
+        if "error" in container_id:
+            return "Failed to get logs for container error: test"
+        return "Fake docker logs output"
+
 
 def override_get_docker_client(server):
     return MockRemoteDockerClient()
-
-
-# Убираем dependency_overrides так как get_docker_client больше не Depends(), а обычный вызов функции внутри create_project
 
 
 @pytest.fixture(autouse=True)
@@ -142,3 +144,26 @@ async def test_delete_project():
 
         get_res = await ac.get("/api/v1/projects/")
         assert proj_id not in [p["id"] for p in get_res.json()]
+
+
+@pytest.mark.asyncio
+async def test_get_project_logs():
+    server_payload = {"name": "target-server-logs", "ip_address": "8.8.8.8"}
+    async with AsyncClient(
+        transport=ASGITransport(app=fastapi_app), base_url="http://test"
+    ) as ac:
+        res_server = await ac.post("/api/v1/servers/", json=server_payload)
+        server_id = res_server.json()["id"]
+
+        payload = {
+            "name": "logs-project",
+            "image": "nginx:alpine",
+            "domain": "logs.dev.local",
+            "server_id": server_id,
+        }
+        res_proj = await ac.post("/api/v1/projects/", json=payload)
+        proj_id = res_proj.json()["id"]
+
+        logs_res = await ac.get(f"/api/v1/projects/{proj_id}/logs")
+        assert logs_res.status_code == 200
+        assert logs_res.json()["logs"] == "Fake docker logs output"

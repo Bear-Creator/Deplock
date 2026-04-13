@@ -117,3 +117,35 @@ async def delete_project(
     await session.delete(project)
     await session.commit()
     return
+
+
+@router.get("/{project_id}/logs")
+async def get_project_logs(
+    project_id: uuid.UUID,
+    tail: int = 100,
+    session: AsyncSession = Depends(get_db_session),
+):
+    """
+    Получить логи Docker-контейнера для проекта.
+    """
+    project = await session.get(Project, project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project with ID {project_id} not found.",
+        )
+
+    server = await session.get(Server, project.server_id)
+    if not server:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Server with ID {project.server_id} not found.",
+        )
+
+    if not project.container_id:
+        return {"logs": "Container ID is not set for this project."}
+
+    docker_client = get_docker_client(server)
+    logs = docker_client.get_container_logs(project.container_id, tail=tail)
+
+    return {"logs": logs}
