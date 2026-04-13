@@ -36,3 +36,14 @@ class RemoteDockerClient:
         )
 
         return {"container_id": container.id, "status": container.status}
+
+    def remove_project(self, container_id: str) -> bool:
+        """Останавливает и удаляет контейнер проекта по его ID."""
+        try:
+            container = self.client.containers.get(container_id)
+            container.stop()
+            container.remove()
+            return True
+        except docker.errors.NotFound:
+            # Если контейнер уже удален или не найден - считаем операцию успешной
+            return True
