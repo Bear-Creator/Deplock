@@ -23,6 +23,13 @@
 * [x] CRUD API для управления серверами.
 * [x] Интеграция данных серверов в `RemoteDockerClient` (уход от хардкода).
 
+### Stage 3: Lifecycle Management & Proxy Routing
+* [x] Развёртывание проектов через POST API.
+* [x] Список проектов и получение деталей через GET API.
+* [x] Удаление проектов и остановка/удаление Docker контейнеров (DELETE API).
+* [ ] Интеграция с логами Docker.
+* [ ] Поддержка GitHub Webhooks (CD).
+
 ## 3. Known Bugs / Issues
 * (Пусто)
 
