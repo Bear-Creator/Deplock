@@ -18,7 +18,9 @@ def test_remote_docker_client_initialization(mock_docker_lib):
     client = RemoteDockerClient(host=host, user=user)
 
     assert client.base_url == "ssh://admin@192.168.1.100"
-    mock_docker_lib.assert_called_once_with(base_url="ssh://admin@192.168.1.100")
+    mock_docker_lib.assert_called_once_with(
+        base_url="ssh://admin@192.168.1.100", use_ssh_client=True
+    )
 
 
 def test_deploy_project_sends_correct_labels(mock_docker_lib):

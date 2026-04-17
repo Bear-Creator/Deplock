@@ -5,6 +5,7 @@ from app.api.v1.servers import router as servers_router
 from app.api.v1.webhooks import router as webhooks_router
 from app.db.database import Base, engine
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -17,6 +18,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Deplock Control Plane API", lifespan=lifespan)
+
+# Настройка CORS для взаимодействия с Frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Регистрация v1 API роутеров
 app.include_router(projects_router, prefix="/api/v1")

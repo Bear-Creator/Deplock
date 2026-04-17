@@ -10,7 +10,7 @@ class RemoteDockerClient:
         # Используем SSH transport, так как открывать Docker daemon по TCP без TLS небезопасно.
         # Ожидается, что на управляющей машине настроен SSH-доступ к целевому серверу.
         self.base_url = f"ssh://{user}@{host}"
-        self.client = docker.DockerClient(base_url=self.base_url)
+        self.client = docker.DockerClient(base_url=self.base_url, use_ssh_client=True)
 
     def deploy_project(
         self, image: str, project_name: str, domain: str
