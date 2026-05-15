@@ -24,7 +24,7 @@ const error = ref<string | null>(null)
 const isModalOpen = ref(false)
 const deploying = ref(false)
 const deployError = ref<string | null>(null)
-const newProjectForm = ref({ name: "", image: "", domain: "", server_id: "" })
+const newProjectForm = ref({ name: "", image: "", domain: "", server_id: "", use_https: false })
 
 const fetchProjects = async () => {
   loading.value = true
@@ -183,6 +183,10 @@ onMounted(() => {
                           <option v-for="s in servers" :key="s.id" :value="s.id">{{ s.name }}</option>
                         </select>
                       </div>
+                    </div>
+                    <div class="flex items-center">
+                      <input id="use_https" type="checkbox" v-model="newProjectForm.use_https" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                      <label for="use_https" class="ml-2 block text-sm text-gray-900">Enable TLS (use HTTPS)</label>
                     </div>
                     
                     <div v-if="deployError" class="text-sm text-red-600 mt-2">{{ deployError }}</div>
