@@ -1,6 +1,7 @@
 import uuid
 
 import docker
+import docker.errors
 from app.api.dependencies.db import get_db_session
 from app.api.dependencies.docker import get_docker_client
 from app.db.models import Project, Server

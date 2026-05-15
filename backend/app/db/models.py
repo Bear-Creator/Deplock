@@ -1,7 +1,7 @@
 import uuid
 
 from app.db.database import Base
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -12,6 +12,7 @@ class Server(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     ip_address: Mapped[str] = mapped_column(String(50))
     ssh_user: Mapped[str] = mapped_column(String(50), default="root")
+    is_active: Mapped[bool | None] = mapped_column(Boolean, default=None, nullable=True)
 
     # One-to-Many к Project
     projects: Mapped[list[Project]] = relationship(

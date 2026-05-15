@@ -13,6 +13,7 @@ class MockRemoteDockerClient:
         # Эмуляция успешного деплоя
         if "error" in project_name:
             import docker
+            import docker.errors
 
             raise docker.errors.APIError("Mocked Docker Error")
         return {"container_id": "success-fake-id", "status": "created"}
@@ -21,6 +22,7 @@ class MockRemoteDockerClient:
         # Эмуляция успешного удаления
         if "error" in container_id:
             import docker
+            import docker.errors
 
             raise docker.errors.APIError("Mocked Docker Error on remove")
         return True
@@ -33,6 +35,7 @@ class MockRemoteDockerClient:
     def pull_image(self, image: str):
         if "error" in image:
             import docker
+            import docker.errors
 
             raise docker.errors.APIError("Mocked Docker Error on pull")
         return True

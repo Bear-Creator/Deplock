@@ -6,17 +6,16 @@ Create Date: 2026-05-14 20:34:46.132022
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "dd2a05c3fca2"
-down_revision: Union[str, Sequence[str], None] = "b3ec0ed638ba"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = "b3ec0ed638ba"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -47,7 +46,7 @@ def downgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_projects_name"), "projects", ["name"], unique=1)
+    op.create_index(op.f("ix_projects_name"), "projects", ["name"], unique=True)
     op.create_table(
         "servers",
         sa.Column("id", sa.CHAR(length=32), nullable=False),
@@ -56,5 +55,5 @@ def downgrade() -> None:
         sa.Column("ssh_user", sa.VARCHAR(length=50), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_servers_name"), "servers", ["name"], unique=1)
+    op.create_index(op.f("ix_servers_name"), "servers", ["name"], unique=True)
     # ### end Alembic commands ###

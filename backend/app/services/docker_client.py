@@ -1,6 +1,7 @@
 from typing import Any
 
 import docker
+import docker.errors
 
 
 class RemoteDockerClient:
