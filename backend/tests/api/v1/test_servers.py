@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from app.main import app
 from httpx import ASGITransport, AsyncClient
@@ -53,8 +55,6 @@ async def test_list_servers():
     assert data[0]["name"] == "list-box-1"
 
 
-from unittest.mock import patch
-
 @pytest.mark.asyncio
 @patch("app.api.v1.servers.RemoteDockerClient")
 async def test_delete_server(mock_docker_client):
@@ -73,11 +73,13 @@ async def test_delete_server(mock_docker_client):
         get_resp = await ac.get(f"/api/v1/servers/{server_id}")
         assert get_resp.status_code == 404
 
+
 @pytest.mark.asyncio
 @patch("app.api.v1.servers.RemoteDockerClient")
 async def test_delete_server_not_found(mock_docker):
     """Тест удаления несуществующего сервера."""
     import uuid
+
     random_id = str(uuid.uuid4())
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"

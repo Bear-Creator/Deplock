@@ -18,7 +18,7 @@ class RemoteDockerClient:
         """Осуществляет развертывание контейнера из переданного образа и настраивает маршрутизацию."""
         # Удаляем существующий контейнер с таким именем, если он есть
         self.remove_project(project_name)
-        
+
         # Для Traefik требуется указать labels на контейнере (ADR-002: Service Discovery)
         labels = {
             "traefik.enable": "true",
@@ -28,7 +28,9 @@ class RemoteDockerClient:
 
         if use_https:
             labels[f"traefik.http.routers.{project_name}.entrypoints"] = "websecure"
-            labels[f"traefik.http.routers.{project_name}.tls.certresolver"] = "myresolver"
+            labels[f"traefik.http.routers.{project_name}.tls.certresolver"] = (
+                "myresolver"
+            )
         else:
             labels[f"traefik.http.routers.{project_name}.entrypoints"] = "web"
 
@@ -60,10 +62,10 @@ class RemoteDockerClient:
         # 1. Удаляем все контейнеры-проекты
         for identifier in project_identifiers:
             self.remove_project(identifier)
-            
+
         # 2. Удаляем Traefik
         self.remove_project("traefik")
-        
+
         # 3. Удаляем сеть traefik-net
         try:
             net = self.client.networks.get("traefik-net")

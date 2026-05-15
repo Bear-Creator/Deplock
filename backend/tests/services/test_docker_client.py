@@ -62,6 +62,7 @@ def test_deploy_project_sends_correct_labels(mock_docker_lib):
         restart_policy={"Name": "unless-stopped"},
     )
 
+
 def test_deploy_project_sends_correct_labels_http(mock_docker_lib):
     client = RemoteDockerClient(host="localhost", user="root")
 

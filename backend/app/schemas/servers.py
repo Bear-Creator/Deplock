@@ -11,9 +11,9 @@ class ServerBase(BaseModel):
 
 class ServerCreate(ServerBase):
     initial_password: str | None = Field(
-        None, 
-        title="Пароль для первоначальной настройки", 
-        description="Используется только один раз для добавления SSH-ключа. Не сохраняется в БД."
+        None,
+        title="Пароль для первоначальной настройки",
+        description="Используется только один раз для добавления SSH-ключа. Не сохраняется в БД.",
     )
 
 
