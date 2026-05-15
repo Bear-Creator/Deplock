@@ -10,11 +10,16 @@ class ServerBase(BaseModel):
 
 
 class ServerCreate(ServerBase):
-    pass
+    initial_password: str | None = Field(
+        None, 
+        title="Пароль для первоначальной настройки", 
+        description="Используется только один раз для добавления SSH-ключа. Не сохраняется в БД."
+    )
 
 
 class ServerRead(ServerBase):
     id: uuid.UUID
+    is_active: bool | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

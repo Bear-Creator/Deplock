@@ -13,17 +13,24 @@ class RemoteDockerClient:
         self.client = docker.DockerClient(base_url=self.base_url, use_ssh_client=True)
 
     def deploy_project(
-        self, image: str, project_name: str, domain: str
+        self, image: str, project_name: str, domain: str, use_https: bool = False
     ) -> dict[str, Any]:
         """Осуществляет развертывание контейнера из переданного образа и настраивает маршрутизацию."""
+        # Удаляем существующий контейнер с таким именем, если он есть
+        self.remove_project(project_name)
+        
         # Для Traefik требуется указать labels на контейнере (ADR-002: Service Discovery)
         labels = {
             "traefik.enable": "true",
             f"traefik.http.routers.{project_name}.rule": f"Host(`{domain}`)",
-            f"traefik.http.routers.{project_name}.entrypoints": "websecure",
-            f"traefik.http.routers.{project_name}.tls.certresolver": "myresolver",
             f"traefik.http.services.{project_name}.loadbalancer.server.port": "80",
         }
+
+        if use_https:
+            labels[f"traefik.http.routers.{project_name}.entrypoints"] = "websecure"
+            labels[f"traefik.http.routers.{project_name}.tls.certresolver"] = "myresolver"
+        else:
+            labels[f"traefik.http.routers.{project_name}.entrypoints"] = "web"
 
         # Запускаем контейнер в detached режиме
         container = self.client.containers.run(
@@ -48,6 +55,22 @@ class RemoteDockerClient:
             # Если контейнер уже удален или не найден - считаем операцию успешной
             return True
 
+    def cleanup_node(self, project_identifiers: list[str]) -> None:
+        """Очищает сервер: удаляет все переданные проекты, а также Traefik и его сеть."""
+        # 1. Удаляем все контейнеры-проекты
+        for identifier in project_identifiers:
+            self.remove_project(identifier)
+            
+        # 2. Удаляем Traefik
+        self.remove_project("traefik")
+        
+        # 3. Удаляем сеть traefik-net
+        try:
+            net = self.client.networks.get("traefik-net")
+            net.remove()
+        except docker.errors.NotFound:
+            pass
+
     def get_container_logs(self, container_id: str, tail: int = 100) -> str:
         """Получает логи указанного контейнера."""
         try:
@@ -62,3 +85,15 @@ class RemoteDockerClient:
     def pull_image(self, image: str) -> None:
         """Скачивает последнюю (или указанную) версию образа."""
         self.client.images.pull(image)
+
+    def is_available(self, timeout: int = 5) -> tuple[bool, str | None]:
+        """Проверяет доступность Docker daemon на удалённом хосте.
+
+        Возвращает пару (available, details). Если доступен, details = None.
+        """
+        try:
+            # docker-py предоставляет метод ping() для проверки API
+            self.client.ping()
+            return True, None
+        except Exception as e:
+            return False, str(e)
