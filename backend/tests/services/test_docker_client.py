@@ -40,7 +40,7 @@ def test_deploy_project_sends_correct_labels(mock_docker_lib):
     image = "nginx:alpine"
 
     result = client.deploy_project(
-        image=image, project_name=project_name, domain=domain
+        image=image, project_name=project_name, domain=domain, use_https=True
     )
 
     # Assert
@@ -56,6 +56,38 @@ def test_deploy_project_sends_correct_labels(mock_docker_lib):
             "traefik.http.routers.test-project.entrypoints": "websecure",
             "traefik.http.routers.test-project.tls.certresolver": "myresolver",
             "traefik.http.services.test-project.loadbalancer.server.port": "80",
+        },
+        network="traefik-net",
+        detach=True,
+        restart_policy={"Name": "unless-stopped"},
+    )
+
+def test_deploy_project_sends_correct_labels_http(mock_docker_lib):
+    client = RemoteDockerClient(host="localhost", user="root")
+
+    mock_container = MagicMock()
+    mock_container.id = "mock-id-456"
+    mock_container.status = "created"
+    mock_docker_lib.return_value.containers.run.return_value = mock_container
+
+    project_name = "test-project-http"
+    domain = "test.example.com"
+    image = "nginx:alpine"
+
+    result = client.deploy_project(
+        image=image, project_name=project_name, domain=domain, use_https=False
+    )
+
+    assert result == {"container_id": "mock-id-456", "status": "created"}
+
+    mock_docker_lib.return_value.containers.run.assert_called_with(
+        image=image,
+        name=project_name,
+        labels={
+            "traefik.enable": "true",
+            "traefik.http.routers.test-project-http.rule": "Host(`test.example.com`)",
+            "traefik.http.routers.test-project-http.entrypoints": "web",
+            "traefik.http.services.test-project-http.loadbalancer.server.port": "80",
         },
         network="traefik-net",
         detach=True,

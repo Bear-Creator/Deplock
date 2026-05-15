@@ -36,6 +36,7 @@ async def create_project(
             image=project_data.image,
             project_name=project_data.name,
             domain=project_data.domain,
+            use_https=project_data.use_https,
         )
 
         # Сохранение статуса в БД
@@ -43,6 +44,7 @@ async def create_project(
             name=project_data.name,
             image=project_data.image,
             domain=project_data.domain,
+            use_https=project_data.use_https,
             server_id=server.id,
             container_id=result.get("container_id"),
             status=result.get("status", "running"),

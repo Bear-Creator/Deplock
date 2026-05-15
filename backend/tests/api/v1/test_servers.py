@@ -51,3 +51,36 @@ async def test_list_servers():
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["name"] == "list-box-1"
+
+
+from unittest.mock import patch
+
+@pytest.mark.asyncio
+@patch("app.api.v1.servers.RemoteDockerClient")
+async def test_delete_server(mock_docker_client):
+    """Тест успешного удаления сервера."""
+    payload = {"name": "delete-box-1", "ip_address": "8.8.4.4"}
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        create_resp = await ac.post("/api/v1/servers/", json=payload)
+        server_id = create_resp.json()["id"]
+
+        del_resp = await ac.delete(f"/api/v1/servers/{server_id}")
+        assert del_resp.status_code == 204
+
+        get_resp = await ac.get(f"/api/v1/servers/{server_id}")
+        assert get_resp.status_code == 404
+
+@pytest.mark.asyncio
+@patch("app.api.v1.servers.RemoteDockerClient")
+async def test_delete_server_not_found(mock_docker):
+    """Тест удаления несуществующего сервера."""
+    import uuid
+    random_id = str(uuid.uuid4())
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.delete(f"/api/v1/servers/{random_id}")
+    assert response.status_code == 404

@@ -7,7 +7,7 @@
 - name: Деплой контейнера Traefik как reverse proxy
   docker_container:
     name: traefik
-    image: traefik:v3.0
+    image: traefik:latest
     restart_policy: unless-stopped
     ports:
       - "80:80"        # HTTP: маршрутизирует трафик по доменам

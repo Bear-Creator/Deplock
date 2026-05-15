@@ -26,6 +26,7 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     image: Mapped[str] = mapped_column(String(200))
     domain: Mapped[str] = mapped_column(String(255))
+    use_https: Mapped[bool] = mapped_column(default=False)
     status: Mapped[str] = mapped_column(String(50), default="created")
     container_id: Mapped[str] = mapped_column(String(100), nullable=True)
 

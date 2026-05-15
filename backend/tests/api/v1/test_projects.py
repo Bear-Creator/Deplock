@@ -7,7 +7,7 @@ from httpx import ASGITransport, AsyncClient
 
 # Простейший mock для RemoteDockerClient
 class MockRemoteDockerClient:
-    def deploy_project(self, image: str, project_name: str, domain: str):
+    def deploy_project(self, image: str, project_name: str, domain: str, use_https: bool = False):
         # Эмуляция успешного деплоя
         if "error" in project_name:
             import docker
