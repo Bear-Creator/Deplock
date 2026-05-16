@@ -50,7 +50,7 @@ const fetchServers = async () => {
 
 const openModal = async () => {
   deployError.value = null
-  newProjectForm.value = { name: "", image: "", domain: "", server_id: "" }
+  newProjectForm.value = { name: "", image: "", domain: "", server_id: "", use_https: false }
   await fetchServers()
   isModalOpen.value = true
 }
