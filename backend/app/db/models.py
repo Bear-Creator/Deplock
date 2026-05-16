@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 
 from app.db.database import Base

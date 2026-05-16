@@ -10,14 +10,11 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
-    "@tauri-apps/plugin-shell": "^2.3.5",
     "axios": "^1.15.0",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
-    "@tauri-apps/api": "^2.11.0",
-    "@tauri-apps/cli": "^2.11.1",
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/tsconfig": "^0.9.1",
