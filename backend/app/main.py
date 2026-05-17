@@ -3,15 +3,16 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, cast
 
-from app.api.v1.projects import router as projects_router
-from app.api.v1.servers import router as servers_router
-from app.api.v1.webhooks import router as webhooks_router
-from app.db.database import Base, engine
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
+
+from app.api.v1.projects import router as projects_router
+from app.api.v1.servers import router as servers_router
+from app.api.v1.webhooks import router as webhooks_router
+from app.db.database import Base, engine
 
 
 def ensure_sqlite_compatibility_schema(connection: Connection) -> None:

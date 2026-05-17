@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import socket
 import sys
 import threading
@@ -41,7 +42,33 @@ def build_server_url(port: int) -> str:
 
 
 def load_app():
-    return import_module("app.main").app
+    try:
+        return import_module("app.main").app
+    except Exception as err:
+        # Fallback: load by path to avoid issues when package metadata is missing
+        main_path = BACKEND_DIR / "app" / "main.py"
+        if not main_path.exists():
+            raise FileNotFoundError(f"Module not found at {main_path}") from err
+
+        try:
+            spec = importlib.util.spec_from_file_location(
+                "deplock.backend.app.main", str(main_path)
+            )
+            if spec is None:
+                raise RuntimeError(
+                    f"Failed to load module spec from {main_path}"
+                ) from None
+            if spec.loader is None:
+                raise RuntimeError(
+                    f"No loader found for module spec at {main_path}"
+                ) from None
+
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            return module.app
+        except Exception as fallback_err:
+            raise RuntimeError(f"Failed to load app from {main_path}") from fallback_err
 
 
 def start_backend_server(port: int) -> tuple[Server, threading.Thread]:
