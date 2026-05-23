@@ -220,3 +220,6 @@ deplock.db
 deplock_diagrams.html
 deplock.db
 Diagrams.md
+Diagrams.puml
+scripts/render_plantuml.py
+append.puml

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import socket
 import sys
 import threading
@@ -107,15 +108,20 @@ def stop_backend_server(server: Server, thread: threading.Thread) -> None:
 
 def main() -> None:
     ensure_supported_python()
-    port = find_free_port()
+
+    dev_mode = os.environ.get("DEPLOCK_DEV") == "1"
+    port = 8000 if dev_mode else find_free_port()
     base_url = build_server_url(port)
     server, thread = start_backend_server(port)
 
     try:
         wait_for_server(base_url)
+
+        webview_url = "http://localhost:5173" if dev_mode else base_url
+
         webview.create_window(
-            title="Deplock",
-            url=base_url,
+            title="Deplock" + (" (DEV)" if dev_mode else ""),
+            url=webview_url,
             min_size=(1100, 720),
             width=1440,
             height=900,

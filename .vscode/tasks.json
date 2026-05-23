@@ -2,38 +2,62 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start Deplock (All)",
+            "label": "Start (DEV)",
             "dependsOn": [
-                "Start Backend",
-                "Start Frontend"
+                "Start Frontend",
+                "Start Desktop"
             ],
-            "dependsOrder": "parallel",
-            "problemMatcher": []
+            "dependsOrder": "parallel"
         },
         {
-            "label": "Start Backend",
+            "label": "Build",
             "type": "shell",
-            "command": "uv run uvicorn app.main:app --app-dir backend --reload",
-            "isBackground": true,
+            "command": "uv run build.py",
             "problemMatcher": [],
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Start Desktop",
+            "type": "shell",
+            "command": "uv run main.py",
+            "options": {
+                "env": {
+                    "DEPLOCK_DEV": "1"
+                },
+                "statusbar": {
+                    "hide" : true
+                }
+            },
             "presentation": {
                 "group": "deplock",
                 "panel": "shared"
-            }
+            },
         },
         {
             "label": "Start Frontend",
             "type": "shell",
             "command": "npm run dev",
             "options": {
-                "cwd": "${workspaceFolder}/frontend"
+                "cwd": "${workspaceFolder}/frontend",
+                "statusbar": {
+                    "hide" : true
+                }
             },
             "isBackground": true,
-            "problemMatcher": [],
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^.*$",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                }
+            },
             "presentation": {
                 "group": "deplock",
                 "panel": "shared"
-            }
+            },
         }
     ]
 }
