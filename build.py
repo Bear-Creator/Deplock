@@ -47,6 +47,8 @@ def build_pyinstaller_command(root_dir: Path) -> list[str]:
         frontend_data,
         "--add-data",
         bootstrap_data,
+        "--icon",
+        str(root_dir / "icon.ico"),
         "main.py",
     ]
 

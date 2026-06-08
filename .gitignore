@@ -191,3 +191,4 @@ Diagrams.md
 Diagrams.puml
 scripts/render_plantuml.py
 append.puml
+scripts/icon.py

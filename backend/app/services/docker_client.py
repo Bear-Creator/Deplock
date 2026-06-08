@@ -1,7 +1,20 @@
+import subprocess
+import sys
 from typing import Any
 
 import docker
 import docker.errors
+
+# Patch subprocess.Popen on Windows to prevent SSH terminal pop-ups
+if sys.platform == "win32":
+
+    class PatchedPopen(subprocess.Popen):
+        def __init__(self, *args, **kwargs):
+            if "creationflags" not in kwargs:
+                kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+            super().__init__(*args, **kwargs)
+
+    subprocess.Popen = PatchedPopen  # type: ignore
 
 
 class RemoteDockerClient:
